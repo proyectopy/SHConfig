@@ -26,4 +26,3 @@ sudo chmod +x instalar
 ./instalar
 ```
 
-No funciona
