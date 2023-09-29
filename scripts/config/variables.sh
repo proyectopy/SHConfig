@@ -107,6 +107,18 @@ ssidkey=$(echo $ssidkey | openssl enc -e -des3 -base64 -pass pass:Descifrando -p
 echo ""
 sudo echo ""ssidkey = \"$ssidkey\">> $Fichero
 
+echo -ne "Si tienes un dominio duckdns puedes configurarlo
+necesitarás introducir algunos datos.
+Pulsa [ENTER] para continuar "
+read ex
+#ex="${ex:-$default}"
+read -p  "Introduce el nombre de dominio sin duckdns.org : " domain
+sudo echo domain = \"$domain\" >> $Fichero
+
+read -sp  "Introduce el token que te asignaron al registarte : " token
+token=$(echo $token | openssl enc -e -des3 -base64 -pass pass:Descifrando -pbkdf2)
+echo ""
+sudo echo ""token = \"$token\">> $Fichero
 
 #cat $Fichero
 

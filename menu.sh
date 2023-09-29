@@ -52,8 +52,8 @@ case $opcion in
 
     # Performs the function with the name of the variable passed
     0) clear; exit;;
-    #1) clear; variables.sh; upgrade.sh; pikey.sh; rootkey.sh; elhostname.sh; laip.sh; elgateway.sh; elnameserver.sh; expandir.sh; timezone.sh; fin;;
-    1) clear; variables.sh; argon.sh; fin;;
+    #1) clear; variables.sh; upgrade.sh; pikey.sh; rootkey.sh; elhostname.sh; laip.sh; elgateway.sh; elnameserver.sh; expandir.sh; timezone.sh; argon.sh; fin;;
+    1) clear; variables.sh; fin;;
     #2) upgrade.sh; curl.sh; git.sh; node.sh; chromium.sh; docker.sh; vscode.sh; ready;;
     #2) sudo chmod +x apps.sh ; source apps.sh;;
     #3) upgrade.sh; ready;;
