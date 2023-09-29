@@ -76,7 +76,6 @@ INSTALACION ARGONONE FINALIZADA
 echo -ne "-------------------------------------
 CONFIGURAR TEMPERATURAS/VELOCIDADES    
 -------------------------------------"
-    #sudo wget https://raw.githubusercontent.com/proyectopy/SHConfig/main/argonone.sh &>/dev/null
     sudo chmod +x argonone.sh
     ./argonone.sh
     fi
