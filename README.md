@@ -7,7 +7,7 @@
 
 <font size="4">Saludos a todos desde Proyectopunto.es. 
 
-Os presento **PySHConfig**. 
+Os presento **SHConfig**. 
 
 PySHConfig es un sistema pensado para facilitar la _puesta apunto de tu raspberry_ con **Raspberry PI OS**.
 
@@ -16,9 +16,9 @@ PySHConfig es un sistema pensado para facilitar la _puesta apunto de tu raspberr
 El script esta realizado en bash script y se ejecuta desde la linea de comandos a través de SSH.
 
 
-# Que hacemos ahora y como lo hacemos ❓
+## Que hacemos ahora y como lo hacemos ❓
 
-## Metodo de instalacion 1 con WGET
+### Metodo de instalacion 1 con WGET
 
 ```shell
 clear && sudo wget https://raw.githubusercontent.com/proyectopy/SHConfig/main/instalar &>/dev/null
