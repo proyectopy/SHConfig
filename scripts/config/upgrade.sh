@@ -13,16 +13,11 @@
 ########################################################################
 # SCRIPS NECESARIOS
 ########################################################################
-#source /home/pi/.configuracion/.scripts/.files/funciones.sh
-. /SHConfig/db/variables.txt
 ########################################################################
 ########################################################################
 # VARIABLES USADAS EN ESTE SCRIPT
 ########################################################################
-# DIRECTORIO CONFIGURACION
-#DIRECTORIOCONF=/home/pi/SHConfig/.configuracion
-# DIRECTORIO ACTUALIZACION
-#DIRECTORIOACT=/home/pi/SHConfig/.actualizaciones
+. SHConfig/db/variables.txt
 # TEXTO DEL CRONTAB
 updater="00 15 * * * /bin/bash /SHConfig/.act/updater"
 ########################################################################
@@ -130,6 +125,7 @@ sudo chown pi:pi updater
 
 sudo chmod +x updater
 #Escribe el archivo updater
+sudo echo "#!/bin/bash" >> updater
 sudo echo "########################################################################" >> updater
 sudo echo "# SCRIPS NECESARIOS" >> updater
 sudo echo "########################################################################" >> updater
