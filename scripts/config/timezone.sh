@@ -39,7 +39,7 @@ echo -ne " ${F_VDOBLE}Quieres Configurar la zona Horaria (Recomendado) [Si/No]: 
     tz="${tz:-$default}"
 
 echo ""
-echo -ne " ${F_VDOBLE}Has elegido que $tz quieres configurar la Zona Horaria"
+echo -ne "Has elegido que $tz quieres configurar la Zona Horaria"
     sleep 3
     if [ $tz != $default ]
         then

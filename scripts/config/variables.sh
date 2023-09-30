@@ -16,6 +16,7 @@ Fichero=/SHConfig/db/variables.txt
 madrid="Europe/Madrid"
 ruta="/argonone"
 rutact="/SHConfig/.act/"
+rutaduckdns="/SHConfig/.conf/.logs/"
 ################################################### 
 ###################################################
 #FUNCIONES DEL SCRIPT
@@ -59,6 +60,15 @@ Pulsa [ENTER] para continuar "
 read r_act
 r_act="${r_act:=$rutact}"
 sudo echo ""r_act = \"$r_act\" >> $Fichero
+
+echo -ne "
+Vamos a crear una ruta para el script de actualizacion de las DNS
+y los logs de duckdns si los usas
+Por defecto se asigna la ruta $rutaduckdns como ruta de instalacion
+Pulsa [ENTER] para continuar "
+read r_act
+r_duck="${r_duck:=$rutaduckdns}"
+sudo echo ""r_duck = \"$r_duck\" >> $Fichero
 
 read -p  "Nuevo hostname para tu Raspberry : " new_hostname
 sudo echo new_hostname = \"$new_hostname\" >> $Fichero
@@ -113,12 +123,19 @@ Pulsa [ENTER] para continuar "
 read ex
 #ex="${ex:-$default}"
 read -p  "Introduce el nombre de dominio sin duckdns.org : " domain
-sudo echo domain = \"$domain\" >> $Fichero
+sudo echo ""domain = \"$domain\" >> $Fichero
 
+# 0eb93ffb-ff85-4451-a921-f632039e97ff
 read -sp  "Introduce el token que te asignaron al registarte : " token
-token=$(echo $token | openssl enc -e -des3 -base64 -pass pass:Descifrando -pbkdf2)
-echo ""
-sudo echo ""token = \"$token\">> $Fichero
+if [ -z "$token" ]
+then
+    sudo echo ""token = \"$token\">> $Fichero
+else
+    token=$(echo $token | openssl enc -e -des3 -base64 -pass pass:Descifrando -pbkdf2)
+    echo ""
+    sudo echo ""token = \"$token\">> $Fichero
+fi
+
 
 #cat $Fichero
 

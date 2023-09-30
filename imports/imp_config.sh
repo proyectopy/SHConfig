@@ -14,7 +14,7 @@
 ########################################################################
 . /SHConfig/scripts/config/argon.sh
 . /SHConfig/scripts/config/argononed.sh
-. /SHConfig/scripts/config/duckdns.org.sh
+. /SHConfig/scripts/config/duckdns.sh
 . /SHConfig/scripts/config/elgateway.sh
 . /SHConfig/scripts/config/elhostname.sh
 . /SHConfig/scripts/config/elnameserver.sh

@@ -52,7 +52,6 @@ fi
 
 if [ "$conf_expand" = true ]; 
 then 
-cursor_off
 clear
 echo -ne "-------------------------------------
 EXPANDIENDO EL SISTEMA DE ARCHIVOS 

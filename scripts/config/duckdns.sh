@@ -2,88 +2,201 @@
 
 ########################################################################
 # Script: duckdns.sh
-# Descripcion: Configurar el DND dinamico con DuckDNS
+# Descripcion: Funcion para la actualizar los DND de Duckdns.org de la raspberry
 # Argumentoss: N/A
-# Creacion/Actualizacion: DIC2021/SEPT2022
-# Version: V1.1.2
+# Creacion/Actualizacion: DIC2021/SEPT2023
+# Version: V1.1.1
 # Author: Wildsouth
 # Email: wildsout@gmail.com
 ########################################################################
 ########################################################################
+########################################################################
 # SCRIPS NECESARIOS
 ########################################################################
-source /home/pi/.configuracion/.scripts/.files/funciones.sh
 ########################################################################
 ########################################################################
 # VARIABLES USADAS EN ESTE SCRIPT
 ########################################################################
+. SHConfig/db/variables.txt
 default="Si"
-export domain="raspyserver" 
-export token="56cb4413-8dcf-4100-9973-13b6da5d5e48"
-export duckdns="*/2 * * * * /home/pi/.configuracion/.scripts/.duckdns/duckdns >/dev/null 2>&1"
+# TEXTO DEL CRONTAB
+duckdns="*/2 * * * * /bin/bash /SHConfig/.conf/.duckdns/duckdns >/dev/null 2>&1"
 ########################################################################
-###################################################
-#        OBTENER LA VARIABLE HOSTNAME (OK)   
-###################################################
-function duckdns (){
-    
-    clear
-    msg_duck
-    echo ""
-    echo -ne " ${F_VDOBLE}Quieres Configurar DuckDns [Si/No]: [$default] "
-    read respuesta
-    respuesta="${respuesta:-$default}"
+# FUNCION AUTOMATIZAR DUCKDNS REVISADO (OK)
+########################################################################
 
-    echo ""
-    echo -ne " ${F_VDOBLE}Has elegido que $respuesta quieres configurar DuckDns"
-    sleep 3
-    if [ $respuesta != $default ]
-        then
-            conf_duckdns=false
-            clear
-            msg_sincambios
-            sleep 3
-            sudo chmod +x /home/pi/.configuracion/.scripts/.menus/menuredes.sh
-            source /home/pi/.configuracion/.scripts/.menus/menuredes.sh
-            
-        else
-            conf_duckdns=true
-            conf_duckdns
-
-    fi    
-   
+duckdns.sh(){
+#clear
+echo $r_duck
+if [ -d "$r_duck" ]
+then
+#clear
+echo -ne "-------------------------------------
+DUCKDNS YA ESTA CONFIGURADO     
+-------------------------------------"
+sleep 6
+else
+#clear
+sleep 2
+install_sendmail
+fi
 }
-####################################################
-#            INSTALAR SCRIPT PARA DUCKDNS        
-####################################################
-function conf_duckdns (){        
-        
-        clear
-        configurando_msg
-        msg_duck
-        msg_espere
 
-        sleep 3
-        sudo mkdir /home/pi/.configuracion/.scripts/.duckdns
-        sudo mkdir /home/pi/.configuracion/.scripts/.duckdns/.logs
-        sudo chown -R $USER:$USER /home/pi/.configuracion/.scripts/.duckdns
-        sudo chmod -R 777 /home/pi/.configuracion/.scripts/.duckdns/
-        sudo touch /home/pi/.configuracion/.scripts/.duckdns/duckdns
-        sudo chown -R $USER:$USER /home/pi/.configuracion/.scripts/.duckdns/duckdns
-        sudo chmod -R 777 /home/pi/.configuracion/.scripts/.duckdns/duckdns
+
+###################################################
+#        INSTALAR SENDMAIL (OK)   
+###################################################
+
+sendmail() {
+#clear
+echo -ne "-------------------------------------
+COMPROBAMOS SI ESTAN INSTALADOS SENDMAIL Y MAILUTILS   
+-------------------------------------"   
+sleep 6
+if dpkg-query -W -f'${db:Status-Abbrev}\n' ssmtp 2>/dev/null \ | grep -q '^.i $';
+then
+echo -ne "-------------------------------------
+SENDMAIL YA ESTA INSTALADO 
+EJECUTAMOS COMPROBAR   
+-------------------------------------"
+sleep 6
+comprobar
+else
+echo -ne "-------------------------------------
+COMO NO ESTA INSTALADO VAMOS A 
+INSTALAR SENDMAIL Y MAILUTILS   
+-------------------------------------"
+sleep 6
+echo " "
+sudo rm /var/lib/dpkg/lock-frontend &>/dev/null
+sudo dpkg --configure -a &>/dev/null
+sudo apt-get -y install ssmtp &>/dev/null
+sudo apt-get -y install mailutils &>/dev/null
+
+echo -ne "-------------------------------------
+CONFIGURANDO ...  
+-------------------------------------"
+echo " "
+
+#Copia de seguridad del archivo de configuracion
+
+sudo chown pi:pi /etc/ssmtp/ssmtp.conf
+sudo chmod 777 /etc/ssmtp/ssmtp.conf
+sudo cp /etc/ssmtp/ssmtp.conf /etc/ssmtp/ssmtp.conf.orig
+
+sleep 3
+
+#Escribe el archivo updater
+
+sudo echo '########################################################################' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo '# AÑADIDO POR EL SCRIPT DE CONFIGURACION' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo '########################################################################' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo 'AuthUser=proyectopy@gmx.es' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo 'AuthPass=L4cl4v3degmx.3s' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo 'FromLineOverride=YES' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo 'mailhub=mail.gmx.es:587' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+sudo echo 'UseSTARTTLS=YES' | sudo tee --append /etc/ssmtp/ssmtp.conf &>/dev/null
+
+
+sudo chown root:root /etc/ssmtp/ssmtp.conf
+sudo chown root:root /etc/ssmtp/ssmtp.conf.orig
+
+sudo chmod 777 /etc/ssmtp/ssmtp.conf
+sudo chmod 777 /etc/ssmtp/ssmtp.conf.orig
+
+echo -ne "-------------------------------------
+CONFIGURADO DEL TODO ...
+AHORA EJECUTAMOS COMPROBAR 
+-------------------------------------"
+sleep 6
+comprobar
+fi
+}
+###################################################
+#       FUNCION comprobar PARA COMPROBAR 
+###################################################
+
+comprobar() {
+upd_dns=false
+#clear
+echo -ne "-------------------------------------
+EMPIEZA LA FUNCION COMPROBAR    
+-------------------------------------"
+sleep 6    
+	
+if [ "$upd_dns" = true ]; 
+then
+            
+#clear
+echo -ne "-------------------------------------
+VALOR DE ACTUALIZAR ES TRUE Y PO LO TANTO
+ESTAMOS CONFIGURANDO LA AUTOMATIZACION
+DE DUCKDNS.ORG.  ESPERE POR FAVOR     
+-------------------------------------"
+sleep 6
+echo " "
+sudo mkdir -p $r_duck
+sudo chown -R $USER:$USER $r_duck
+        #sudo chmod -R 777 $r_duck/
+        #sudo touch $r_duck/duckdns
+echo -ne "-------------------------------------
+CREANDO EL SCRIPT DUCKDNS
+-------------------------------------"
+sleep 6
+        echo " "
+        sudo touch duckdns
+        sudo chown pi:pi duckdns
+
+        sudo chmod +x duckdns
+
+        sudo chmod -R 777 duckdns
         #!/bin/bash
-        echo "#!/bin/bash">> /home/pi/.configuracion/.scripts/.duckdns/duckdns
-        echo "#">> /home/pi/.configuracion/.scripts/.duckdns/duckdns
-        echo "# Archivo creado desde el menu Redes">> /home/pi/.configuracion/.scripts/.duckdns/duckdns
-        echo echo url="\"https://www.duckdns.org/update?domains=$domain&token=$token&ip=\" | curl -k -o /home/pi/.configuracion/.scripts/.duckdns/.logs/duck.log -K -" >> /home/pi/.configuracion/.scripts/.duckdns/duckdns
+        sudo echo "#!/bin/bash" >> duckdns
+        sudo echo "########################################################################" >> duckdns
+        sudo echo "# SCRIPS NECESARIOS" >> duckdns
+        sudo echo "########################################################################" >> duckdns
+        sudo echo "#. SHConfig/db/variables.txt" >> duckdns
+        sudo echo "########################################################################" >> duckdns
+        sudo echo "# Script: duckdnsUPGRADE                                                    " >> duckdns
+        sudo echo "# Descripcion: Configuracion del cron para duckdns    "  >> duckdns
+        sudo echo "########################################################################" >> duckdns
+        sudo echo "#">> duckdns
+        sudo echo "act=\`date +%d%m%Y\`" >> duckdns
+        sudo echo "dt=\`date +'%A, %d del %m de %Y a las %H:%M ' \` " >> duckdns
+        sudo echo echo url="\"https://www.duckdns.org/update?domains=$domain&token=$token&ip=\" | curl -k -o $r_duck/.logs/duck.log -K -" >> duckdns
+        sudo echo "sudo sendmail -t < /SHConfig/mail_templates/duckdns.html">> duckdns
+        sudo echo "Hemos enviado un email el \$dt >> $r_duck//.logs/emails_\$act.log"  >> duckdns
 
+        #Situa en su directorio definitivo el archivo updater
+        echo -ne "-------------------------------------
+        MUEVE EL SCRIPT DUCKDNS A SU CARPETA 
+        -------------------------------------"
+        sleep 6
+        sudo mv duckdns $r_duck
 
         (crontab -u pi -l; echo "$duckdns" ) | crontab -u pi -
         
-        source /home/pi/.configuracion/.scripts/.duckdns/duckdns
+        echo -ne "-------------------------------------
+        EJECUTANDO POR PRIMERA VEZ EL SCRIPT DUCKDNS 
+        -------------------------------------"
+        sleep 6
 
-        clear
-        msg_duck
-        msg_instalado
+        #ejecuta por primera vez el archivo updater
+        #clear
+        echo -ne "----------------------------------------
+        ACTUALIZANDO LOS DNS POR PRIMERA VEZ
+        ----------------------------------------"
+        echo " "
+
+        source $r_duck/duckdns
+
+        #clear
+        echo -n "--------------------------------------
+        SCRIPT PARA DUCKDNS EJECUTADO Y DNS ACTUALIZADA  
+        --------------------------------------
+        "
+        sleep 6
+        else
+        source /SHConfig/menu.sh
+    fi
 }
-duckdns
